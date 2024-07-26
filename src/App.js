@@ -50,6 +50,7 @@ function App() {
     multiple: true,
     maxFiles: 10,
     accept: 'image/*',
+    capture: 'environment'
   });
 
   const handleSave = () => {
