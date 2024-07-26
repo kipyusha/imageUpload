@@ -1,11 +1,12 @@
 // src/App.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useDropzone } from 'react-dropzone';
 import 'tailwindcss/tailwind.css';
 
 function App() {
   const [records, setRecords] = useState([]);
-  const [currentImages, setCurrentImages] = useState([]);
   const [currentTitle, setCurrentTitle] = useState('');
+  const [currentImages, setCurrentImages] = useState([]);
   const [viewRecord, setViewRecord] = useState(null);
 
   // Загрузка записей из localStorage при загрузке компонента
@@ -21,10 +22,15 @@ function App() {
     localStorage.setItem('records', JSON.stringify(records));
   }, [records]);
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    setCurrentImages(prevImages => [...prevImages, ...files].slice(0, 10));
-  };
+  const onDrop = useCallback((acceptedFiles) => {
+    setCurrentImages(prevImages => [...prevImages, ...acceptedFiles].slice(0, 10));
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDrop,
+    multiple: true,
+    accept: 'image/*'
+  });
 
   const handleSave = () => {
     if (currentTitle.trim() && currentImages.length > 0) {
@@ -48,13 +54,6 @@ function App() {
     }
   };
 
-  // Очистка временных URL для изображений
-  useEffect(() => {
-    return () => {
-      currentImages.forEach(image => URL.revokeObjectURL(image.preview));
-    };
-  }, [currentImages]);
-
   return (
     <div className="p-4 max-w-sm mx-auto">
       {viewRecord === null ? (
@@ -67,15 +66,10 @@ function App() {
             placeholder="Введите название записи"
             className="mt-4 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 p-2 focus:outline-none focus:border-blue-500"
           />
-          <input
-            type="file"
-            id="files"
-            name="files"
-            multiple = "multiple"
-            accept="image/jpeg, image/png, image/jpg"
-            onChange={handleFileChange}
-            className="mt-4 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500"
-          />
+          <div {...getRootProps()} className="mt-4 p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 cursor-pointer">
+            <input {...getInputProps()} />
+            <p className="text-gray-500">Перетащите изображения сюда или кликните для выбора</p>
+          </div>
           <button
             onClick={handleSave}
             className="mt-4 w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600"
