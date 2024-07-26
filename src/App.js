@@ -45,6 +45,8 @@ function App() {
     setViewRecord(index);
   };
 
+  
+
   const handleDelete = (index) => {
     const updatedRecords = records.filter((_, i) => i !== index);
     setRecords(updatedRecords);
