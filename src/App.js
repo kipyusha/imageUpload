@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import 'tailwindcss/tailwind.css';
 
@@ -66,7 +66,9 @@ function App() {
             placeholder="Введите название записи"
             className="mt-4 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 p-2 focus:outline-none focus:border-blue-500"
           />
-          <div {...getRootProps()} className="mt-4 p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 cursor-pointer">
+          <div
+            {...getRootProps({ className: 'mt-4 p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 cursor-pointer' })}
+          >
             <input {...getInputProps()} />
             <p className="text-gray-500">Перетащите изображения сюда или кликните для выбора</p>
           </div>
