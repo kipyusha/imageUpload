@@ -29,6 +29,7 @@ function App() {
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: true,
+    maxFiles: 10,
     accept: 'image/*'
   });
 
