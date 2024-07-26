@@ -69,9 +69,10 @@ function App() {
           />
           <input
             type="file"
-            name='files[]'
-            multiple
-            accept="image/*"
+            id="files"
+            name="files"
+            multiple = "multiple"
+            accept="image/jpeg, image/png, image/jpg"
             onChange={handleFileChange}
             className="mt-4 block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 focus:outline-none focus:border-blue-500"
           />
