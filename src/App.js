@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useCallback, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import 'tailwindcss/tailwind.css';
@@ -9,7 +8,6 @@ function App() {
   const [currentImages, setCurrentImages] = useState([]);
   const [viewRecord, setViewRecord] = useState(null);
 
-  // Загрузка записей из localStorage при загрузке компонента
   useEffect(() => {
     try {
       const savedRecords = JSON.parse(localStorage.getItem('records'));
@@ -22,7 +20,6 @@ function App() {
     }
   }, []);
 
-  // Сохранение записей в localStorage при изменении records
   useEffect(() => {
     try {
       localStorage.setItem('records', JSON.stringify(records));
@@ -33,24 +30,26 @@ function App() {
   }, [records]);
 
   const onDrop = useCallback((acceptedFiles) => {
-    try {
-      console.log('Принятые файлы:', acceptedFiles);
+    const imagePromises = acceptedFiles.map(file => new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    }));
+
+    Promise.all(imagePromises).then(images => {
       setCurrentImages(prevImages => [
         ...prevImages,
-        ...acceptedFiles
+        ...images
       ].slice(0, 10));
-      console.log('Текущие изображения:', currentImages);
-    } catch (error) {
-      console.error('Ошибка при добавлении файлов:', error);
-    }
-  }, [currentImages]);
+    }).catch(error => console.error('Ошибка при обработке файлов:', error));
+  }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: true,
     maxFiles: 10,
     accept: 'image/*',
-    onError: (error) => console.error('Ошибка при загрузке файлов:', error)
   });
 
   const handleSave = () => {
@@ -68,8 +67,6 @@ function App() {
     setViewRecord(index);
     console.log('Просмотр записи:', records[index]);
   };
-
-  
 
   const handleDelete = (index) => {
     try {
@@ -116,7 +113,7 @@ function App() {
               {currentImages.map((image, index) => (
                 <img
                   key={index}
-                  src={URL.createObjectURL(image)}
+                  src={image}
                   alt={`preview-${index}`}
                   className="w-full h-24 object-cover rounded-lg"
                 />
@@ -150,7 +147,7 @@ function App() {
             {records[viewRecord].images.map((image, index) => (
               <img
                 key={index}
-                src={URL.createObjectURL(image)}
+                src={image}
                 alt={`saved-${index}`}
                 className="w-full h-40 object-cover rounded-lg"
               />
@@ -175,4 +172,5 @@ function App() {
 }
 
 export default App;
+
 
