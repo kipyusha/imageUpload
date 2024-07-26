@@ -41,8 +41,19 @@ function App() {
   const handleDelete = (index) => {
     const updatedRecords = records.filter((_, i) => i !== index);
     setRecords(updatedRecords);
-    setViewRecord(null);
+    if (viewRecord === index) {
+      setViewRecord(null);
+    } else if (viewRecord > index) {
+      setViewRecord(viewRecord - 1);
+    }
   };
+
+  // Очистка временных URL для изображений
+  useEffect(() => {
+    return () => {
+      currentImages.forEach(image => URL.revokeObjectURL(image.preview));
+    };
+  }, [currentImages]);
 
   return (
     <div className="p-4 max-w-sm mx-auto">
@@ -58,6 +69,7 @@ function App() {
           />
           <input
             type="file"
+            name='files[]'
             multiple
             accept="image/*"
             onChange={handleFileChange}
