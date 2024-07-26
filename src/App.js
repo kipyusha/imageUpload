@@ -11,26 +11,46 @@ function App() {
 
   // Загрузка записей из localStorage при загрузке компонента
   useEffect(() => {
-    const savedRecords = JSON.parse(localStorage.getItem('records'));
-    if (savedRecords) {
-      setRecords(savedRecords);
+    try {
+      const savedRecords = JSON.parse(localStorage.getItem('records'));
+      if (savedRecords) {
+        setRecords(savedRecords);
+        console.log('Записи успешно загружены из localStorage:', savedRecords);
+      }
+    } catch (error) {
+      console.error('Ошибка при загрузке записей из localStorage:', error);
     }
   }, []);
 
   // Сохранение записей в localStorage при изменении records
   useEffect(() => {
-    localStorage.setItem('records', JSON.stringify(records));
+    try {
+      localStorage.setItem('records', JSON.stringify(records));
+      console.log('Записи успешно сохранены в localStorage:', records);
+    } catch (error) {
+      console.error('Ошибка при сохранении записей в localStorage:', error);
+    }
   }, [records]);
 
   const onDrop = useCallback((acceptedFiles) => {
-    setCurrentImages(prevImages => [...prevImages, ...acceptedFiles].slice(0, 10));
-  }, []);
+    try {
+      console.log('Принятые файлы:', acceptedFiles);
+      setCurrentImages(prevImages => [
+        ...prevImages,
+        ...acceptedFiles
+      ].slice(0, 10));
+      console.log('Текущие изображения:', currentImages);
+    } catch (error) {
+      console.error('Ошибка при добавлении файлов:', error);
+    }
+  }, [currentImages]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: true,
     maxFiles: 10,
-    accept: 'image/*'
+    accept: 'image/*',
+    onError: (error) => console.error('Ошибка при загрузке файлов:', error)
   });
 
   const handleSave = () => {
@@ -38,22 +58,31 @@ function App() {
       setRecords([...records, { title: currentTitle, images: currentImages }]);
       setCurrentTitle('');
       setCurrentImages([]);
+      console.log('Запись сохранена:', { title: currentTitle, images: currentImages });
+    } else {
+      console.warn('Не удалось сохранить запись: не все поля заполнены');
     }
   };
 
   const handleViewRecord = (index) => {
     setViewRecord(index);
+    console.log('Просмотр записи:', records[index]);
   };
 
   
 
   const handleDelete = (index) => {
-    const updatedRecords = records.filter((_, i) => i !== index);
-    setRecords(updatedRecords);
-    if (viewRecord === index) {
-      setViewRecord(null);
-    } else if (viewRecord > index) {
-      setViewRecord(viewRecord - 1);
+    try {
+      const updatedRecords = records.filter((_, i) => i !== index);
+      setRecords(updatedRecords);
+      if (viewRecord === index) {
+        setViewRecord(null);
+      } else if (viewRecord > index) {
+        setViewRecord(viewRecord - 1);
+      }
+      console.log('Запись удалена:', index);
+    } catch (error) {
+      console.error('Ошибка при удалении записи:', error);
     }
   };
 
